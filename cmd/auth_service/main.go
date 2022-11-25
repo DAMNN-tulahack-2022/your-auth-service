@@ -5,29 +5,29 @@ import (
 
 	"github.com/damnn/tulahack/your-auth-service/auth"
 	"github.com/damnn/tulahack/your-auth-service/repository"
+	"github.com/damnn/tulahack/your-auth-service/tools"
 	"github.com/damnn/tulahack/your-auth-service/transport"
-	"github.com/nickolation/your-api-tools/your"
 )
 
 func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	logger := your.SetupLogger()
-	config, err := your.LoadDammnAppConfig(logger) 
+	logger := tools.SetupLogger()
+	config, err := tools.LoadDammnAppConfig(logger)
 	if err != nil {
 		logger.Log().Fatal().AnErr("load env configs err", err)
 	}
 
-	db, err := your.BeginDbInstance(config, logger) 
+	db, err := tools.BeginDbInstance(config, logger)
 	if err != nil {
 		logger.Log().Fatal().AnErr("db connection err", err)
 	}
 
-	cache, err := your.NewExternalCache(ctx, config, logger)
+	cache, err := tools.NewExternalCache(ctx, config, logger)
 	if err != nil {
 		logger.Log().Fatal().AnErr("connect to external cache err", err)
-	} 
+	}
 
 	// mock
 	logger.Log().Debug().Interface("a", db)
