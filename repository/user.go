@@ -17,7 +17,7 @@ const (
 						values
 						 	(:total_exp, :vacancy_id, :login, :first_name, :last_name,
 							:middle_name, :avatar_uri, :current_project_id, :viewed_ids,
-							:completed_project_ids, :skills_ids, :role)
+							:completed_project_ids, :skills_ids, 'regular')
 								returning *`
 )
 

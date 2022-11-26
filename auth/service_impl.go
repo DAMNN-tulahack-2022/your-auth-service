@@ -23,14 +23,14 @@ func (acs *AuthService) GithubLogin(ctx context.Context, login string) (id uint3
 	}
 
 	user := new(repository.User)
-	technologiesMap := make(map[string]struct{}, len(ghViews))
+/* 	technologiesMap := make(map[string]struct{}, len(ghViews))
 	for _, view := range ghViews {
 		technologiesMap[view.Language] = struct{}{}
 	}
 
 	for tech := range technologiesMap {
 		user.SkillsIds = append(user.SkillsIds, uint32(len(tech)))
-	}
+	} */
 
 	user.Login = login
 	user.AvaterURL = ghViews[0].Owner.URL

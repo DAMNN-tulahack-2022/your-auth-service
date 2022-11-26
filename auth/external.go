@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 )
 
@@ -21,12 +20,10 @@ type (
 
 const (
 	_githubUsersUrl = "https://api.github.com/users/"
-	_reposPostfix = "/repos"
+	_reposPostfix   = "/repos"
 )
 
 func scrapGithubViews(githubLogin string) ([]GithubRepoView, error) {
-	
-	log.Print(fmt.Sprintf(_githubUsersUrl+"%s"+_reposPostfix, githubLogin))
 	body, err := http.DefaultClient.Get(fmt.Sprintf(_githubUsersUrl+"%s"+_reposPostfix, githubLogin))
 	if err != nil {
 		return nil, err
@@ -43,6 +40,5 @@ func scrapGithubViews(githubLogin string) ([]GithubRepoView, error) {
 		return nil, err
 	}
 
-	log.Printf("result - [%#v]", views)
 	return views, err
 }
