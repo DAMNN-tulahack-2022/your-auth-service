@@ -1,32 +1,38 @@
 package repository
 
-import "context"
+import (
+	"context"
+	"database/sql"
+	"errors"
 
-type AuthCoreRepository struct {
-	ctx context.Context
-	
-	db     struct{}
-	cache  struct{}
-	memory struct{}
+	"github.com/damnn/tulahack/your-auth-service/tools"
+	"github.com/jmoiron/sqlx"
+)
+
+type AuthRepositoryCore struct {
+	db *sqlx.DB
 }
 
-func NewAuthCoreRepository(ctx context.Context) *AuthCoreRepository {
-	return &AuthCoreRepository{
-		ctx: ctx,
+func NewAuthRepositoryCore() *AuthRepositoryCore {
+	return &AuthRepositoryCore{
+		db: tools.DB,
 	}
 }
 
-func (acr *AuthCoreRepository) CreateAccount() (err error) {
+func (arc AuthRepositoryCore) FlowUser(ctx context.Context, user *User) (err error) {
+	err = arc.db.GetContext(ctx, &user.Id, getUserById, user.Login)
+	if err != nil && errors.Is(err, sql.ErrNoRows) {
+		var stmt *sqlx.NamedStmt
+		stmt, err = arc.db.PrepareNamed(createUser)
+		if err != nil {
+			return 
+		}
+	
+		if err = stmt.GetContext(ctx, user, user); err != nil {
+			return 
+		}
+	}
 
 	return
-}
 
-func (acr *AuthCoreRepository) BlockAccount() (err error) {
-
-	return
-}
-
-func (acr *AuthCoreRepository) VerifyAccount() (err error) {
-
-	return
 }

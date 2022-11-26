@@ -2,7 +2,9 @@ package main
 
 import (
 	"context"
+	"log"
 
+	_ "github.com/lib/pq"
 	"github.com/damnn/tulahack/your-auth-service/auth"
 	"github.com/damnn/tulahack/your-auth-service/repository"
 	"github.com/damnn/tulahack/your-auth-service/tools"
@@ -13,43 +15,40 @@ func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	logger := tools.SetupLogger()
+	logger, err := tools.SetupLogger()
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	config, err := tools.LoadDammnAppConfig(logger)
 	if err != nil {
 		logger.Log().Fatal().AnErr("load env configs err", err)
 	}
 
-	db, err := tools.BeginDbInstance(config, logger)
+	logger.Log().Printf("[%#v]", config)
+
+	err = tools.BeginDbInstance(config, logger)
 	if err != nil {
-		logger.Log().Fatal().AnErr("db connection err", err)
+		logger.Log().Printf("[%v]", err)
 	}
 
-	cache, err := tools.NewExternalCache(ctx, config, logger)
+	err = tools.NewExternalCache(ctx, config, logger)
 	if err != nil {
-		logger.Log().Fatal().AnErr("connect to external cache err", err)
+		logger.Log().Printf("[%v]", err)
 	}
 
-	// mock
-	logger.Log().Debug().Interface("a", db)
-	logger.Log().Debug().Interface("a", cache)
+	repo := repository.NewAuthRepositoryCore()
+	service := auth.NewAuthService(repo)
 
-	repo := repository.NewAuthCoreRepository(ctx)
-
-	serivce := auth.NewAuthService(ctx, repo)
-
-	proxyServer := transport.NewAuthProxy(ctx, serivce)
+	proxyServer := transport.NewAuthProxy(ctx, logger, config, service)
 
 	go func() {
 		if err := proxyServer.Run(); err != nil {
-			//
+			logger.Log().Fatal().Err(err)
 		}
 	}()
 
 	proxyServer.GracefullNotify()
-	if err := proxyServer.Shotdown(); err != nil {
-		// log
-
-	}
 
 	// closeDeps
 

@@ -1,13 +1,33 @@
 syntax = "proto3";
 package proto;
 
+
 option go_package = "dammn-services/api/auth/proto";
 
-enum ClassEnum {
-    default = 0;
-    usual = 1;
-    rare = 2;
-    legend = 3;
-    epic = 4;
-    mega = 5; 
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+    host: "api.damnn-services.online";
+};
+
+import "common.proto";
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/field_mask.proto";
+
+message GithubLoginRequest {
+    string login = 1;
+}
+
+message GithubLoginResponse {
+    string login = 1;
+    uint32 id = 2;
+}
+
+service YourAdminService {
+    rpc GithubLogin(GithubLoginRequest) returns (GithubLoginResponse) {
+        option (google.api.http) = {
+        post: "/auth/github-login"
+        body:"*"
+        }; 
+    }
 }

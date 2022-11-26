@@ -4,14 +4,73 @@
     "title": "auth_service.proto",
     "version": "version not set"
   },
+  "tags": [
+    {
+      "name": "YourAdminService"
+    }
+  ],
+  "host": "api.damnn-services.online",
   "consumes": [
     "application/json"
   ],
   "produces": [
     "application/json"
   ],
-  "paths": {},
+  "paths": {
+    "/auth/github-login": {
+      "post": {
+        "operationId": "YourAdminService_GithubLogin",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/protoGithubLoginResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/protoGithubLoginRequest"
+            }
+          }
+        ],
+        "tags": [
+          "YourAdminService"
+        ]
+      }
+    }
+  },
   "definitions": {
+    "protoGithubLoginRequest": {
+      "type": "object",
+      "properties": {
+        "login": {
+          "type": "string"
+        }
+      }
+    },
+    "protoGithubLoginResponse": {
+      "type": "object",
+      "properties": {
+        "login": {
+          "type": "string"
+        },
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
     "protobufAny": {
       "type": "object",
       "properties": {

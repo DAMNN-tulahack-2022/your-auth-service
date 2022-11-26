@@ -1,8 +1,7 @@
 package repository
 
-type AuthRepository interface {
-	CreateAccount() error
-	VerifyAccount() error
-	BlockAccount() error
-}
+import "context"
 
+type AuthRepository interface {
+	FlowUser(ctx context.Context, user *User) (err error)
+}

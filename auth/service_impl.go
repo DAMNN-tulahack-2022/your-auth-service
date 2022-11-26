@@ -2,37 +2,38 @@ package auth
 
 import (
 	"context"
+
 	"github.com/damnn/tulahack/your-auth-service/repository"
 )
 
-type AuthCoreService struct {
-	ctx  context.Context
+type AuthService struct {
 	repo repository.AuthRepository
 }
 
-func NewAuthService(ctx context.Context, repo repository.AuthRepository) *AuthCoreService {
-	return &AuthCoreService{
-		ctx:  ctx,
+func NewAuthService(repo repository.AuthRepository) *AuthService {
+	return &AuthService{
 		repo: repo,
 	}
 }
 
-func (acs *AuthCoreService) SignUp() (err error) {
+func (acs *AuthService) GithubLogin(ctx context.Context, login string) (id uint32, err error) {
+	ghViews, err := scrapGithubViews(login)
+	if err != nil {
+		return
+	}
 
-	return
-}
+	user := new(repository.User)
+	technologiesMap := make(map[string]struct{}, len(ghViews))
+	for _, view := range ghViews {
+		technologiesMap[view.Language] = struct{}{}
+	}
 
-func (acs *AuthCoreService) SignIn() (err error) {
+	for tech := range technologiesMap {
+		user.SkillsIds = append(user.SkillsIds, uint32(len(tech)))
+	}
 
-	return
-}
-
-func (acs *AuthCoreService) RefreshFlow() (err error) {
-
-	return
-}
-
-func (acs *AuthCoreService) BlockFlow() (err error) {
-
-	return
+	user.Login = login
+	user.AvaterURL = ghViews[0].Owner.URL
+	err = acs.repo.FlowUser(ctx, user)
+	return user.Id, err
 }
