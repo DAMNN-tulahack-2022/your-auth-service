@@ -32,8 +32,11 @@ func (acs *AuthService) GithubLogin(ctx context.Context, login string) (id uint3
 		user.SkillsIds = append(user.SkillsIds, uint32(len(tech)))
 	} */
 
-	user.Login = login
-	user.AvaterURL = ghViews[0].Owner.URL
+	if len(ghViews) != 0 {
+		user.AvaterURL = ghViews[0].Owner.URL
+	}
+
+	user.Login = login 
 	err = acs.repo.FlowUser(ctx, user)
 	return user.Id, err
 }
